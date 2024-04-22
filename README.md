@@ -97,8 +97,107 @@
 
 # docker-compose.yml (for containerization and complete built)
 
+```
+## Docker Compose Configuration
+
+### Version
+
+version: "3"
+```
+
+Specifies the version of the Docker Compose file format being used. In this case, it's version 3.
+
+### Services
+
+```
+services:
+```
+
+Defines the services that make up your application.
+
+#### Frontend Service
+
+```
+  frontend:
+    image: httpd:latest
+    container_name: frontend_21BCP217
+    volumes:
+      - "./frontend:/usr/local/apache2/htdocs"
+    ports:
+      - 3000:80
+```
+
+- **frontend**: Specifies a service named `frontend`.
+  - **image**: Specifies the Docker image to use for the frontend service, which is `httpd:latest`.
+  - **container_name**: Defines the name of the container for the frontend service as `frontend_21BCP217`.
+  - **volumes**: Mounts the local directory `./frontend` to the container directory `/usr/local/apache2/htdocs`, allowing files to be served by Apache.
+  - **ports**: Maps port 3000 on the host to port 80 in the container.
+
+#### Backend Service
+
+```
+  backend:
+    container_name: backend_21BCP217
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - "./api:/var/www/html/"
+    ports:
+      - 5000:80
+```
+
+  - **backend**: Specifies a service named `backend`.
+  - **container_name**: Defines the name of the container for the backend service as `backend_21BCP217`.
+  - **build**: Specifies the build context and Dockerfile for building the backend service image.
+  - **volumes**: Mounts the local directory `./api` to the container directory `/var/www/html/`.
+  - **ports**: Maps port 5000 on the host to port 80 in the container.
+
+#### Database Service
+
+```
+  database:
+    image: mysql:latest
+    container_name: database_21BCP217
+    environment:
+      MYSQL_DATABASE: todo_app
+      MYSQL_USER: todo_admin
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d"
+```
+
+  - **database**: Specifies a service named `database`.
+  - **image**: Specifies the Docker image to use for the database service, which is `mysql:latest`.
+  - **container_name**: Defines the name of the container for the database service as `database_21BCP217`.
+  - **environment**: Sets environment variables for configuring the MySQL database.
+  - **volumes**: Mounts the local directory `./db` to the container directory `/docker-entrypoint-initdb.d`, allowing initialization scripts to be executed when the container starts.
+
+#### PhpMyAdmin Service
+
+```
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_21BCP217
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=database
+      - PMA_PORT=3306
+    depends_on:
+      - database
+```
+
+  - **phpmyadmin**: Specifies a service named `phpmyadmin`.
+  - **image**: Specifies the Docker image to use for the phpMyAdmin service, which is `phpmyadmin/phpmyadmin`.
+  - **container_name**: Defines the name of the container for the phpMyAdmin service as `phpmyadmin_21BCP217`.
+  - **ports**: Maps port 8080 on the host to port 80 in the container.
+  - **environment**: Sets environment variables to specify the hostname and port of the MySQL database.
+  - **depends_on**: Specifies that the phpMyAdmin service depends on the database service, ensuring that the database is started before phpMyAdmin.
 
 
+***
 ***
 
 # Dockerized Multi-Architecture Web Application (CLOUD IA)
@@ -167,6 +266,6 @@ This project is licensed under the [MIT License](LICENSE).
 - [Apache HTTP Server](https://httpd.apache.org/) - For serving the frontend.
 - [MySQL](https://www.mysql.com/) - For the database management system.
 - [phpMyAdmin](https://www.phpmyadmin.net/) - For database administration.
-- [Building a Simple 3-Tier Architecture with Docker Compose: A Hands-On Project Journey](https://medium.com/@kesaralive/getting-started-with-docker-compose-hands-on-project-experience-e562ab07e24c) - For refernce
+- [Building a Simple 3-Tier Architecture with Docker Compose: A Hands-On Project Journey](https://medium.com/@kesaralive/getting-started-with-docker-compose-hands-on-project-experience-e562ab07e24c) - For reference
   
 
