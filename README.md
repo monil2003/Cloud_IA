@@ -1,7 +1,7 @@
 # IA 
 # Dockerfile (for backend)
 
-The database files are stored in the `db` directory.
+
 
 # docker-compose.yml (for containerization and complete built)
 
