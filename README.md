@@ -1,6 +1,98 @@
 # IA 
 # Dockerfile (for backend)
 
+1. `
+   FROM ubuntu:20.04
+   `
+
+   - **FROM**: Specifies the base image to build upon. In this case, it's Ubuntu 20.04.
+
+3. ```
+   LABEL maintainer="monil.dce21@sot.pdpu.ac.in"
+   LABEL description="Apache / PHP development environment"
+   ```
+
+   - **LABEL**: Adds metadata to the image. It provides information about the maintainer and a brief description of the image.
+
+4. ```
+   ARG DEBIAN_FRONTEND=newt
+   RUN apt-get update && apt-get install -y lsb-release && apt-get clean all
+   RUN apt install ca-certificates apt-transport-https software-properties-common -y
+   RUN add-apt-repository ppa:ondrej/php
+   ```
+
+   - **ARG**: Defines a build argument that can be used during the image build process.
+   - **RUN**: Executes commands in the image during the build process. These commands update the package lists, install required packages, and add a repository for PHP packages.
+
+5. ```
+   RUN apt-get -y update && apt-get install -y \
+   apache2 \
+   php8.0 \
+   libapache2-mod-php8.0 \
+   php8.0-bcmath \
+   php8.0-gd \
+   php8.0-sqlite \
+   php8.0-mysql \
+   php8.0-curl \
+   php8.0-xml \
+   php8.0-mbstring \
+   php8.0-zip \
+   mcrypt \
+   nano
+   ```
+
+   - **RUN**: Installs necessary packages including Apache2, PHP 8.0, and various PHP extensions for common web development tasks.
+
+6. ```
+   RUN apt-get install locales
+   RUN locale-gen fr_FR.UTF-8
+   RUN locale-gen en_US.UTF-8
+   RUN locale-gen de_DE.UTF-8
+   ```
+
+   - **RUN**: Installs locales package and generates locale settings for French, English, and German.
+
+7. ```
+   RUN sed -i -e 's/^error_reporting\s*=.*/error_reporting = E_ALL/' /etc/php/8.0/apache2/php.ini
+   RUN sed -i -e 's/^display_errors\s*=.*/display_errors = On/' /etc/php/8.0/apache2/php.ini
+   RUN sed -i -e 's/^zlib.output_compression\s*=.*/zlib.output_compression = Off/' /etc/php/8.0/apache2/php.ini
+   ```
+
+   - **RUN**: Modifies PHP configuration files to set error reporting to display all errors, turn on error display, and disable zlib output compression.
+
+8. ```
+   ENV TERM xterm
+   ```
+
+   - **ENV**: Sets an environment variable `TERM` to `xterm`.
+
+10. ```
+    RUN a2enmod rewrite
+    RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+    RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+    ```
+
+   - **RUN**: Enables Apache `mod_rewrite`, adds a ServerName to Apache configuration, and allows `.htaccess` files to override settings.
+
+11. ```
+    RUN chgrp -R www-data /var/www
+    RUN find /var/www -type d -exec chmod 775 {} +
+    RUN find /var/www -type f -exec chmod 664 {} +
+    ```
+
+   - **RUN**: Sets appropriate permissions for the `/var/www` directory to ensure proper file access by the web server.
+
+11. ```
+    EXPOSE 80
+    ```
+
+    - **EXPOSE**: Exposes port 80 to allow access to the Apache web server running inside the container.
+
+13. ```
+    CMD ["/usr/sbin/apache2ctl","-DFOREGROUND"]
+    ```
+
+    - **CMD**: Specifies the command to run when the container starts. In this case, it starts the Apache2 server in the foreground.
 
 
 # docker-compose.yml (for containerization and complete built)
